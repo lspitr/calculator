@@ -19,14 +19,58 @@ body {
     background: radial-gradient(ellipse at top left, var(--primary) 60%, var(--secondary) 100%);
     color: var(--text);
     min-height: 100vh;
-    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
-    
+
+.container {
+    width: 100%;
+    max-width: 400px;
+    padding: 2rem;
+    background: linear-gradient(135deg, #2d003d 60%, #1a0026 100%);
+    border-radius: 1.6rem;
+    box-shadow: 0 0 40px #a259ff66;
+    text-align: center;
+}
+
+h1 {
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+}
+
+label {
+    display: block;
+    margin-top: 1rem;
+    opacity: 0.85;
+}
+
+input {
+    width: 100%;
+    margin-top: 0.3rem;
+    padding: 0.6rem;
+    background: #12001c;
+    border: 1px solid #444;
+    color: var(--text);
+    border-radius: 0.5rem;
+    font-size: 1rem;
+}
+
+.output {
+    margin-top: 1.5rem;
+    white-space: pre;
+    font-size: 1.1rem;
+    color: var(--accent);
+}
+
 .stars {
     position: fixed;
     inset: 0;
     pointer-events: none;
+    z-index: 0;
 }
+
 .star {
     position: absolute;
     width: 2px;
@@ -36,53 +80,10 @@ body {
     opacity: 0.7;
     animation: twinkle 3s infinite alternate;
 }
+
 @keyframes twinkle {
     from { opacity: 0.4; }
-    to   { opacity: 1; }
-}
-
-.container {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: linear-gradient(135deg, #2d003d 60%, #1a0026 100%);
-    padding: 2.2rem;
-    border-radius: 1.6rem;
-    box-shadow: 0 0 40px #a259ff66;
-    width: 320px;
-    text-align: center;
-}
-
-h1 {
-    margin: 0 0 1.2rem;
-    color: var(--accent);
-    text-shadow: 0 0 20px #a259ff88;
-}
-
-label {
-    display: block;
-    margin-top: 1.1rem;
-    opacity: 0.85;
-    font-size: 0.95rem;
-}
-
-input {
-    width: 100%;
-    margin-top: 0.4rem;
-    padding: 0.6rem;
-    background: #12001c;
-    border: 1px solid #444;
-    color: var(--text);
-    border-radius: 0.5rem;
-    text-align: center;
-    font-size: 1rem;
-}
-
-.output {
-    margin-top: 1.5rem;
-    white-space: pre;
-    font-weight: bold;
+    to { opacity: 1; }
 }
 </style>
 </head>
@@ -95,26 +96,15 @@ input {
     <h1>Deepslate Calculator</h1>
 
     <label>Starting Pence</label>
-    <input id="start" type="number" placeholder="1000">
+    <input id="start" type="number" placeholder="2,500">
 
-    <label>Pence Goal</label>
-    <input id="end" type="number" placeholder="10000">
+    <label>End Goal</label>
+    <input id="end" type="number" placeholder="10,000">
 
     <div class="output" id="output"></div>
 </div>
 
 <script>
-
-const stars = document.querySelector('.stars');
-for (let i = 0; i < 80; i++) {
-    const s = document.createElement('div');
-    s.className = 'star';
-    s.style.top = Math.random() * 100 + 'vh';
-    s.style.left = Math.random() * 100 + 'vw';
-    s.style.animationDuration = (2 + Math.random() * 2) + 's';
-    stars.appendChild(s);
-}
-
 const STACK_VALUE = 2;
 const STACKS_PER_SHULKER = 27;
 const SHULKER_VALUE = STACK_VALUE * STACKS_PER_SHULKER;
@@ -127,8 +117,12 @@ function calculate() {
     const start = parseInt(startInput.value);
     const end = parseInt(endInput.value);
 
-    if (isNaN(start) || isNaN(end) || end <= start) {
-        output.textContent = "";
+    if (isNaN(start) || isNaN(end)) {
+        output.textContent = "Enter both values.";
+        return;
+    }
+    if (end <= start) {
+        output.textContent = "End must be greater than start.";
         return;
     }
 
@@ -137,13 +131,24 @@ function calculate() {
     const stacks = Math.floor((needed % SHULKER_VALUE) / STACK_VALUE);
 
     output.textContent =
-`$${needed}
-${shulkers} shulkers
-${stacks} stacks`;
+`Pence Needed: ${needed}p
+${shulkers} shulkers & ${stacks} stacks`;
 }
 
+// Auto-calc on input
 startInput.addEventListener("input", calculate);
 endInput.addEventListener("input", calculate);
+
+// Stars effect
+const stars = document.querySelector('.stars');
+for (let i = 0; i < 80; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    s.style.top = Math.random() * 100 + 'vh';
+    s.style.left = Math.random() * 100 + 'vw';
+    s.style.animationDuration = (2 + Math.random() * 2) + 's';
+    stars.appendChild(s);
+}
 </script>
 
 </body>
